@@ -8,6 +8,8 @@ from flask_wtf import Form
 from wtforms import StringField, SubmitField
 from wtforms.validators import Required
 from flask_sqlalchemy import SQLAlchemy
+from flask.ext.migrate import Migrate,MigrateCommand      #导入数据库迁移扩展
+
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 
@@ -22,6 +24,11 @@ manager = Manager(app)
 bootstrap = Bootstrap(app)
 moment = Moment(app)
 db = SQLAlchemy(app)
+
+#以下是数据库迁移添加的代码
+migrate = Migrate(app, db)
+manager.add_command('db', MigrateCommand)
+
 
 class Role(db.Model):
     __tablename__ = 'roles'
@@ -38,6 +45,7 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(64), unique=True, index=True)
     role_id = db.Column(db.Integer, db.ForeignKey('roles.id'))
+    age = db.Column(db.Integer)
 
     def __repr__(self):
         return '<User %r>' % self.username
